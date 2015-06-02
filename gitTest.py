@@ -1,6 +1,6 @@
 # Git test
 
-string = 'I love GitHub!'
+string = 'Hello'
 
 for letter in string: 
 	print(letter)
