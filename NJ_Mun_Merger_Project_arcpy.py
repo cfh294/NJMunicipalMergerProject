@@ -1,3 +1,14 @@
+#############################################################################################################
+#
+# Author: Connor Hornibrook
+# Version: 5.0
+# Date: 02 June 2015
+# 
+# Created at various computer labs at Rowan University, specifically Robinson Hall 301 (the Geolab)
+#
+#############################################################################################################
+
+
 import arcpy
 from arcpy import env
 import sets
