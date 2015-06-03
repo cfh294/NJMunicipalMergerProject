@@ -42,15 +42,15 @@ finalMergeFiles = []
 
 # Dictionary used in the raw() method 
 escape_dict={'\a':r'\a',
-			 '\b':r'\b',
-			 '\c':r'\c',
-			 '\f':r'\f',
-			 '\n':r'\n',
-			 '\r':r'\r',
-			 '\t':r'\t',
-			 '\v':r'\v',
-			 '\'':r'\'',
-			 '\"':r'\"'}
+	     '\b':r'\b',
+	     '\c':r'\c',
+	     '\f':r'\f',
+	     '\n':r'\n',
+	     '\r':r'\r',
+	     '\t':r'\t',
+	     '\v':r'\v',
+	     '\'':r'\'',
+	     '\"':r'\"'}
 		
 # Takes an array of municipality names and parses them together. Allows the user to see who merged with whom after the process is finished.
 # Helps populate the 'MUN' field.
