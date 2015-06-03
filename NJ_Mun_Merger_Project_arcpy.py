@@ -1,14 +1,3 @@
-#############################################################################################################
-#
-# Author: Connor Hornibrook
-# Version: 5.0
-# Date: 02 June 2015
-# 
-# Created at various computer labs at Rowan University, specifically Robinson Hall 301 (the Geolab)
-#
-#############################################################################################################
-
-
 import arcpy
 from arcpy import env
 import sets
@@ -217,7 +206,6 @@ for county_shp in county_list:
 				codeList.add(tup) 
 			else:
 				codeList.add((srcMun, None))
-			cursor.updateRow(row)
 			row = cursor.next() 
 		del row, cursor
 
@@ -350,7 +338,6 @@ for county_shp in county_list:
 		while row:
 			if(row.getValue('POP2010') < popMin):
 				lowPopCount += 1
-			cursor.updateRow(row)
 			row = cursor.next()
 		del row, cursor 
 		
