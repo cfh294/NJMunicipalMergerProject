@@ -2,12 +2,11 @@
 #
 # Author: Connor Hornibrook
 # Version: 5.0
-# Date: 02 June 2015
+# Date: 04 June 2015
 # 
 # Created at various computer labs at Rowan University, specifically Robinson Hall 301 (the Geolab)
 #
 #############################################################################################################
-
 
 import arcpy
 from arcpy import env
@@ -42,36 +41,46 @@ finalMergeFiles = []
 
 # Dictionary used in the raw() method 
 escape_dict={'\a':r'\a',
-	     '\b':r'\b',
-	     '\c':r'\c',
-	     '\f':r'\f',
-	     '\n':r'\n',
-	     '\r':r'\r',
-	     '\t':r'\t',
-	     '\v':r'\v',
-	     '\'':r'\'',
-	     '\"':r'\"'}
-		
+             '\b':r'\b',
+             '\c':r'\c',
+             '\f':r'\f',
+             '\n':r'\n',
+             '\r':r'\r',
+             '\t':r'\t',
+             '\v':r'\v',
+             '\'':r'\'',
+             '\"':r'\"'}
+			
+
+# Needed due to inconsistencies between cloud python and desktop python, replaces the len() method. Cloud uses a version of python
+# that no longer recognizes len(), while desktop still uses 2.7.		
+def manualLength(string): 
+	length = 0
+	for s in string: 
+		length += 1
+	return length
+
 # Takes an array of municipality names and parses them together. Allows the user to see who merged with whom after the process is finished.
 # Helps populate the 'MUN' field.
 def newMuniName(oldNames):
 	newName = ''
-	for name in oldNames:
-		newName = (name + '-')
+	for name in oldNames: 
+		newName += (name + '-')
+	
 	# Return the new string with out the extraneous '-' character 
 	return newName[:-1]
-
+	
 
 # Credit to Brett Cannon on code.ActiveState.com, slight modifications by myself.
 # Returns a raw string representation of text and eliminates all special backslash characters
 def raw(text):
-	new_string=''
-	for char in text:
-		try: 
-			new_string = escape_dict[char]
-		except KeyError: 
-			new_string = char
-	return new_string
+    new_string=''
+    for char in text:
+        try: 
+            new_string += escape_dict[char]
+        except KeyError: 
+            new_string += char
+    return new_string
 
 # Function that returns an array of border lengths for the given municipality. Parameter
 # is a municipal code String. 
@@ -85,7 +94,7 @@ def getAllBorders(munCode):
 	del cursor
 	del r
 	return lengths
-
+	
 # Returns the merger partner, based on the source municipality's municipal code and the 
 # length of the border that the two municipality's share. Returns the merger partner's 
 # municipal code String. 
@@ -93,7 +102,7 @@ def getFellowMerger(length, srcMunCode):
 	cursor = arcpy.SearchCursor(polyAnalysis)
 	mergerMunCode = '' 
 	for r in cursor:
-
+	
 		# Towns with longest borders are both merger candidates
 		if(r.getValue('src_MUN_CODE') == srcMunCode and r.getValue('LENGTH') == length and r.getValue('src_isCand') == 1 and r.getValue('nbr_isCand') == 1):
 		   
@@ -106,29 +115,29 @@ def getFellowMerger(length, srcMunCode):
 		
 	del r, cursor 	
 	return mergerMunCode
-
+	
 #############################################################################################################
 #############################################################################################################
 
 for county_shp in county_list:
-
+	
 	# Some counties will require more than one round of mergers, i.e. a merger occurs and the population 
 	# minimum is still not met.
 	iteration = 1
-
+	
 	# Trigger variable that alerts the program if all municipalities meet the population minimum requirement.
 	popReqMet = False
 
 	# A dictionary that will contain the new municipal codes and names, paired together. Used to populate 
 	# fields after each iteration.
 	muni_dict = {}
-
+	
 	# Removing the file path from the name. The county_name variable will be used for file naming purposes throughout the 
 	# program.
-	splitPath = county_shp.split('\\')
-	county_name = splitPath[len(splitPath) - 1]
+	splitPath = raw(county_shp).split('\\')
+	county_name = splitPath[manualLength(splitPath) - 1]
 	arcpy.AddMessage(county_name)
-
+	
 	# The main process: continue until all municipalities in this county have a population over the desired minimum that
 	# was input by the user. 
 	while popReqMet == False: 
@@ -180,7 +189,7 @@ for county_shp in county_list:
 			srcMunCode = row.getValue('src_MUN_CODE')
 			borders = getAllBorders(srcMunCode)
 			longestBorder = 0
-			if(len(borders) > 1):
+			if(manualLength(borders) > 1):
 				longestBorder = max(borders)
 			else:
 				longestBorder = borders[0]
@@ -259,7 +268,7 @@ for county_shp in county_list:
 				del nameRow, nameCursor
 				
 				muni_dict[str(newMunCode)] = newMuniName(oldNames)
-				newMunCode = 1
+				newMunCode += 1
 				
 			cursor.updateRow(row)
 			row = cursor.next()
@@ -274,7 +283,7 @@ for county_shp in county_list:
 			if(merge_ID == None):
 				row.setValue('%s_MERGE_ID'%(county_name), newMunCode)
 				muni_dict[str(newMunCode)] = row.getValue('%s_MUN'%(county_name))
-				newMunCode = 1
+				newMunCode += 1
 				
 			cursor.updateRow(row)
 			row = cursor.next()
@@ -338,7 +347,7 @@ for county_shp in county_list:
 		lowPopCount = 0
 		while row:
 			if(row.getValue('POP2010') < popMin):
-				lowPopCount = 1
+				lowPopCount += 1
 			row = cursor.next()
 		del row, cursor 
 		
@@ -351,10 +360,13 @@ for county_shp in county_list:
 		else:
 			muniDict = {}
 			
-		iteration = 1
+		iteration += 1
+
+
+
 # Once the process is complete for all input files, merge them into one big file (only if there'
 # more than one file present. 
-if(len(county_list) > 1): 		
+if(manualLength(county_list) > 1): 		
 	arcpy.Merge_management(finalMergeFiles, 'nj_merged_%s'%(str(popMin)))
 	# Now that there is a unified file, delete the individual county ones. 
 	for file in finalMergeFiles:
