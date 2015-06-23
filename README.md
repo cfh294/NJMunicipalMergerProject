@@ -16,5 +16,5 @@ I decided to try to model a state-wide merger policy that distributes geography 
 ## Requirements...
 
 - ArcMap 10+. I know, I'm sorry. 
-- NJ municipalities shapefile or feature class that contains the population values for each municipality. If you would like to    use this program, just message or e-mail me for this file!
+- NJ municipalities shapefile or feature class that contains the population values for each municipality. These shapefiles are located in the folder provided in this repository. The field names and values are prepared exactly for this project, so these should be the only inputs used. 
 - Patience...while the original methodology for this program ran for literally 15 hours for the entire state, this one still   takes around an hour. Not too bad, especially if you are only doing one or two counties (roughly 5-10 minutes per county). 
