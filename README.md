@@ -3,7 +3,7 @@ NJ Municipal Merger Project
 
 ## What are municipal mergers? 
 
-Municipal mergers are a oft-used solution to administrative inefficiency. By merging two municipalities, many of the costs of running two municipalities would then be one. There is debate over the effectiveness of such policies, however they have been successful with national, top-down policies (for more info: https://en.wikipedia.org/wiki/Merger_(politics) ). 
+Municipal mergers are an often used solution to administrative inefficiency. By merging two municipalities, many of the costs of running two municipalities would then be one. There is debate over the effectiveness of such policies, however they have been successful with national, top-down policies (for more info: https://en.wikipedia.org/wiki/Merger_(politics) ). 
 
 ## Why New Jersey? 
 
