@@ -17,7 +17,11 @@ I decided to try to model a state-wide merger policy that distributes geography 
 
 - ArcMap 10+. I know, I'm sorry. 
 - NJ municipalities shapefile or feature class that contains the population values for each municipality. These shapefiles are located in the folder provided in this repository. The field names and values are prepared exactly for this project, so these should be the only inputs used. To use this file, just download this repo as a zip file. 
-- Patience...while the original methodology for this program ran for literally 15 hours for the entire state, this one still   takes around an hour. Not too bad, especially if you are only doing one or two counties (roughly 5-10 minutes per county). 
+- Patience...while the original methodology for this program ran for literally 15 hours for the entire state, this one still   takes around an hour. Not too bad, especially if you are only doing one or two counties (roughly 5-10 minutes per county).
+
+## Setup...
+
+To use the tool, set up a script within ArcCatalog that takes a multivalue feature class parameter (county files), a long integer parameter (population minimum), and an output workspace parameter (of type workspace) IN THAT ORDER. 
 
 ## Performance...
 
