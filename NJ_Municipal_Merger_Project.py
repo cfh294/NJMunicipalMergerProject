@@ -1,9 +1,14 @@
 __author__ = 'CFH'
 import psycopg2, sets, heapq, sys
+
+# connection to the database
 conn = psycopg2.connect(database='njmergers', user='postgres', password=None, host='localhost', port='5433')
 cursor = conn.cursor()
-target = 10000
 
+# the target population minimum, not a "hard" threshold
+target = 100000
+
+# every county in NJ by name
 NJ_COUNTIES = ['ATLANTIC', 'BERGEN', 'BURLINGTON', 'CAMDEN', 'CAPEMAY', 'CUMBERLAND', 'ESSEX', 'GLOUCESTER', 'HUDSON',
                'HUNTERDON', 'MERCER', 'MIDDLESEX', 'MONMOUTH', 'MORRIS', 'OCEAN', 'PASSAIC', 'SALEM', 'SOMERSET',
                'SUSSEX', 'UNION', 'WARREN']
@@ -16,17 +21,9 @@ COUNTY_GROWTH_RATES = {'ATLANTIC' : .087, 'BERGEN' : .024, 'BURLINGTON' : .06, '
                        'SALEM' : .028, 'SOMERSET' : .087, 'SUSSEX' : .035, 'UNION' : .027,
                        'WARREN' : .061}
 
+# constants for conversion
 SQFT_2_SQMI = 27878400
 MILES_2_FT = 5280
-STATEWIDE_MIN = 66083
-NJ_POP_IN_RATE = .045
-
-
-# find the maximum thresholds
-cursor.execute("SELECT county, SUM(pop) AS s FROM munis GROUP BY county")
-countyMaxDict = {}
-for row in cursor:
-    countyMaxDict[row[0]] = row[1]
 
 class Geometry(object):
     def __init__(self, shape):
@@ -357,10 +354,16 @@ class Merger(object):
 
     @staticmethod
     def meetsThreshold(county):
-        for m in county.munis:
-            if m.population < county.thresh:
-                return False
-        return True
+        if len(county.munis) > 1:
+            for m in county.munis:
+                if m.population < county.thresh:
+                    return False
+            return True
+
+        # else, all mergers that were possible have happened, but pop min not met, end process
+        # as there are no more options
+        else:
+            return True
 
     @staticmethod
     def fixCodes(county):
@@ -441,7 +444,6 @@ class Driver(object):
                 valid = True
             else:
                 print "Invalid input!"
-
 
 def main():
     muniCount = 0

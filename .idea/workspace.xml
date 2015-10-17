@@ -26,17 +26,18 @@
       <file leaf-file-name="NJ_Municipal_Merger_Project.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/NJ_Municipal_Merger_Project.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="1.9125">
-              <caret line="504" column="21" selection-start-line="504" selection-start-column="21" selection-end-line="504" selection-end-column="21" />
+            <state vertical-scroll-proportion="0.375">
+              <caret line="10" column="28" selection-start-line="10" selection-start-column="28" selection-end-line="10" selection-end-column="28" />
               <folding>
-                <element signature="e#1311#1364#0" expanded="false" />
-                <element signature="e#1392#1604#0" expanded="false" />
-                <element signature="e#1634#3343#0" expanded="false" />
-                <element signature="e#3369#6418#0" expanded="false" />
-                <element signature="e#8204#14075#0" expanded="false" />
-                <element signature="e#8296#13699#0" expanded="false" />
-                <element signature="e#14103#16055#0" expanded="false" />
-                <element signature="e#16074#18576#0" expanded="false" />
+                <element signature="e#1232#1285#0" expanded="false" />
+                <element signature="e#1313#1525#0" expanded="false" />
+                <element signature="e#1555#3264#0" expanded="false" />
+                <element signature="e#3290#6339#0" expanded="false" />
+                <element signature="e#6363#8097#0" expanded="false" />
+                <element signature="e#8125#14219#0" expanded="false" />
+                <element signature="e#8217#13620#0" expanded="false" />
+                <element signature="e#14247#16199#0" expanded="false" />
+                <element signature="e#16217#18719#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -58,7 +59,7 @@
     <order />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-168" />
+    <option name="x" value="67" />
     <option name="y" value="23" />
     <option name="width" value="1194" />
     <option name="height" value="707" />
@@ -270,7 +271,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-168" y="23" width="1194" height="707" extended-state="0" />
+    <frame x="67" y="23" width="1194" height="707" extended-state="1" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24958123" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -298,24 +299,25 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="1" />
+      <option name="time" value="2" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/NJ_Municipal_Merger_Project.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.9125">
-          <caret line="504" column="21" selection-start-line="504" selection-start-column="21" selection-end-line="504" selection-end-column="21" />
+        <state vertical-scroll-proportion="0.375">
+          <caret line="10" column="28" selection-start-line="10" selection-start-column="28" selection-end-line="10" selection-end-column="28" />
           <folding>
-            <element signature="e#1311#1364#0" expanded="false" />
-            <element signature="e#1392#1604#0" expanded="false" />
-            <element signature="e#1634#3343#0" expanded="false" />
-            <element signature="e#3369#6418#0" expanded="false" />
-            <element signature="e#8204#14075#0" expanded="false" />
-            <element signature="e#8296#13699#0" expanded="false" />
-            <element signature="e#14103#16055#0" expanded="false" />
-            <element signature="e#16074#18576#0" expanded="false" />
+            <element signature="e#1232#1285#0" expanded="false" />
+            <element signature="e#1313#1525#0" expanded="false" />
+            <element signature="e#1555#3264#0" expanded="false" />
+            <element signature="e#3290#6339#0" expanded="false" />
+            <element signature="e#6363#8097#0" expanded="false" />
+            <element signature="e#8125#14219#0" expanded="false" />
+            <element signature="e#8217#13620#0" expanded="false" />
+            <element signature="e#14247#16199#0" expanded="false" />
+            <element signature="e#16217#18719#0" expanded="false" />
           </folding>
         </state>
       </provider>
