@@ -1,18 +1,26 @@
 __author__ = 'CFH'
-import psycopg2, sets, heapq, sys, timeit, csv
+import psycopg2, sets, heapq, sys
 conn = psycopg2.connect(database='njmergers', user='postgres', password=None, host='localhost', port='5433')
 cursor = conn.cursor()
 target = 10000
 
 NJ_COUNTIES = ['ATLANTIC', 'BERGEN', 'BURLINGTON', 'CAMDEN', 'CAPEMAY', 'CUMBERLAND', 'ESSEX', 'GLOUCESTER', 'HUDSON',
-               'HUNTERDON', 'MERCER', 'MIDDLESEX', 'MORRIS', 'MONMOUTH', 'OCEAN', 'PASSAIC', 'SALEM', 'SOMERSET',
+               'HUNTERDON', 'MERCER', 'MIDDLESEX', 'MONMOUTH', 'MORRIS', 'OCEAN', 'PASSAIC', 'SALEM', 'SOMERSET',
                'SUSSEX', 'UNION', 'WARREN']
-CSV_FIELDS = ['COUNTY', 'MUN', 'MUNCODE', 'POP2010', 'POPDEN2010', 'AREA', 'MERGED']
+
+# From 2010 Census
+COUNTY_GROWTH_RATES = {'ATLANTIC' : .087, 'BERGEN' : .024, 'BURLINGTON' : .06, 'CAMDEN' : .009,
+                       'CAPEMAY' : -0.049, 'CUMBERLAND' : .071, 'ESSEX' : -0.012, 'GLOUCESTER' : .132,
+                       'HUDSON' : .042, 'HUNTERDON' : .052, 'MERCER' : .045, 'MIDDLESEX' : .08,
+                       'MONMOUTH' : .025, 'MORRIS' : .047, 'OCEAN' : .128, 'PASSAIC' : .025,
+                       'SALEM' : .028, 'SOMERSET' : .087, 'SUSSEX' : .035, 'UNION' : .027,
+                       'WARREN' : .061}
+
 SQFT_2_SQMI = 27878400
 MILES_2_FT = 5280
 STATEWIDE_MIN = 66083
 NJ_POP_IN_RATE = .045
-THRESH = target - (NJ_POP_IN_RATE * target)
+
 
 # find the maximum thresholds
 cursor.execute("SELECT county, SUM(pop) AS s FROM munis GROUP BY county")
@@ -98,6 +106,14 @@ class County(Area):
         self.name = name
         self.munis = []
         self.borders = set()
+        self.growthRate = COUNTY_GROWTH_RATES[self.name]
+
+        # Compute threshold to take into account population growth. If growth rate is under zero,
+        # the target will be used as is
+        self.thresh = target
+        if self.growthRate > 0:
+            self.thresh -= (self.growthRate * target)
+
 
         ##################################################################### this works!
         cursor.execute("SELECT * FROM munis WHERE county = '%s'"%(self.name))
@@ -170,7 +186,7 @@ class Muni(Area):
 
         # determining if this muni falls below the population minimum
         self.isCand = False
-        if self.population < THRESH:
+        if self.population < county.thresh:
             self.isCand = True
 
         self.wasMerged = False
@@ -342,7 +358,7 @@ class Merger(object):
     @staticmethod
     def meetsThreshold(county):
         for m in county.munis:
-            if m.population < THRESH:
+            if m.population < county.thresh:
                 return False
         return True
 
@@ -353,58 +369,6 @@ class Merger(object):
         for m in county.munis:
             m.code = codePrefix + '_%d'%count
             count += 1
-
-class Tests(object):
-    def __init__(self):
-        self.county = County('CAPE MAY')
-        self.merger = Merger(self.county)
-        # self.printMergerPartners()
-        # self.borderCmpTests()
-        # for muni in self.county.munis:
-        #     print muni
-
-        while(not self.merger.meetsThreshold()):
-            mergeMunis = self.county.munis.copy()
-
-            while mergeMunis:
-                muni = mergeMunis.pop()
-                if muni in self.county.munis:
-                    self.merger.merge(muni)
-            self.merger.fixCodes()
-
-        for m in self.county.munis:
-            print m
-
-    def borderCmpTests(self):
-        borders = []
-        print 'COMPARING TWO OF PENNSVILLE\'s BORDERS'
-        for muni in self.county.munis:
-            if muni.name == 'PENNSVILLE TWP':
-                for b in muni.muniBorders:
-                    borders.append(b)
-        print borders[1] # smaller
-        print borders[2]
-
-        boolList = []
-
-        if borders[1] < borders[2]:
-            boolList = ['false', 'true', 'false', 'false', 'true', 'true']
-        else:
-            boolList = ['true', 'false', 'false', 'true', 'false', 'true']
-
-        print str(borders[1] >= borders[2]) + ' Should be %s'%(boolList[0])
-        print str(borders[1] <= borders[2]) + ' Should be %s'%(boolList[1])
-        print str(borders[1] == borders[2]) + ' Should be %s'%(boolList[2])
-        print str(borders[1] > borders[2]) + ' Should be %s'%(boolList[3])
-        print str(borders[1] < borders[2]) + ' Should be %s'%(boolList[4])
-        print str(borders[1] != borders[2]) + ' Should be %s'%(boolList[5])
-
-    def printMergerPartners(self):
-        for muni in self.merger.county.munis:
-            print '%s partners:'%muni.name
-            for p in muni.mergerPartners:
-                print p.name
-            print '\n'
 
 class Driver(object):
     def __init__(self):
@@ -478,15 +442,13 @@ class Driver(object):
             else:
                 print "Invalid input!"
 
+
 def main():
     muniCount = 0
     countyCount = 1
 
     newTableFields = 'county varchar, mun varchar, muncode varchar(6), pop int, popden double precision, '
     newTableFields += 'area double precision, merged int'
-
-    jtPath = '/Users/CFH/Desktop/join_table.csv'
-    newMunisPath = '/Users/CFH/Desktop/new_munis.csv'
 
     cursor.execute('CREATE TABLE joinKey (old char(4), new varchar(6));')
     cursor.execute('CREATE TABLE newmunis (%s)'%newTableFields)
