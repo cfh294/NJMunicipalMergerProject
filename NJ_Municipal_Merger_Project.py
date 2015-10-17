@@ -85,10 +85,6 @@ class Border(Geometry):
     def __str__(self):
         return '%s and %s, %s miles'%(self.munis[0].name, self.munis[1].name, (self.length / MILES_2_FT))
 
-    # def calculateCrossCounty(self):
-    #     if self.munis[0].code[:2] != self.munis[1].code[:2]: # first two digits of muncode are different,
-    #         self.isCrossCounty = True                                    # cross county border indicated
-
 class County(Area):
     def __init__(self, name):
 
@@ -112,7 +108,7 @@ class County(Area):
             self.thresh -= (self.growthRate * target)
 
 
-        ##################################################################### this works!
+        #####################################################################
         cursor.execute("SELECT * FROM munis WHERE county = '%s'"%(self.name))
         for muniRow in [row for row in cursor]:
             muni = Muni(self, muniRow[2], muniRow[4], muniRow[5], muniRow[8])
@@ -258,10 +254,6 @@ class Merger(object):
             elif trigger and longestBorderPartner.isCand and longestBorderPartnersLongestBorderPartner != muni:
 
                 secondLongestBorderPartner = muniBordersByLength[1].grabOtherMuni(muni)
-                # if secondLongestBorderPartner is None:
-                #     print muni
-                #     for b in muni.muniBorders:
-                #         print b
                 if secondLongestBorderPartner.isCand: # second longest bord. partner is a candidate
                     foundPartner = secondLongestBorderPartner
 
@@ -342,8 +334,6 @@ class Merger(object):
                 else:
                     b.munis[1] = newMuni
 
-            # for m in oldMunis:
-            #     newMuni.county.munis.remove(m)
             newMuni.county.munis.remove(foundPartner)
             newMuni.county.munis.remove(muni)
 
