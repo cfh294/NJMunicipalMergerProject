@@ -15,18 +15,12 @@ I decided to try to model a state-wide merger policy that distributes geography 
 
 ## Requirements...
 
-- ArcMap 10+. I know, I'm sorry. 
-- NJ municipalities shapefile or feature class that contains the population values for each municipality. These shapefiles are located in the folder provided in this repository. The field names and values are prepared exactly for this project, so these should be the only inputs used. To use this file, just download this repo as a zip file. 
-- Patience...while the original methodology for this program ran for literally 15 hours for the entire state, this one still   takes around an hour. Not too bad, especially if you are only doing one or two counties (roughly 5-10 minutes per county).
-
-## Setup...
-
-To use the tool, set up a script within ArcCatalog that takes a multivalue feature class parameter (county files), a long integer parameter (population minimum), and an output workspace parameter (of type workspace) IN THAT ORDER. 
+- Once I get this up and running as some sort of application...None! It is completely free of ESRI arcpy now. I am still deciding on how I plan to launch this. Much has to do with the database. 
 
 ## Performance...
 
-So far the program works pretty well for lower thresholds (under around 15,000 people). However, anything over seems to cause memory leaks (shocker ArcMap) on the computers I'm using. However, one can work around this by simply renaming the temp file that is produced by the program before it crashes, and putting back in as an input. Unfortunately, this is the only solution I have found so far, but I am currently trying to find the cause of this problem. So this is where you possibly come in! Someone in the open source world, please help me out if you know what could be causing my computer's memory usage to look like a seismograph! 
+Now that ESRI and arcpy are no longer being used, the performance is literally expontially faster. No run takes more than 10-15 seconds, whereas the old methodology took over an hour.
 
 ## The Future...
 
-Ideally, I'd like to re-write this process using the QGIS python library to make it completely free to use. I am also going to explore using PostgreSQL and PostGIS functions to possibly re-write it in SQL to improve performance. 
+Ideally, I'd like this tool to be used online, or as a downloadable program/app. Ideally ideally, it would be cool if people could use this as analysis tool for future policy. Triple ideally, it would really cool if I or other programmers could apply similar methods to other topics that relate to the Modifyable Areal Unit Problem. I'm thinking about looking at congressional districts next. 
