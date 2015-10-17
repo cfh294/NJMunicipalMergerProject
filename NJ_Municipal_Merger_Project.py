@@ -5,9 +5,6 @@ import psycopg2, sets, heapq, sys
 conn = psycopg2.connect(database='njmergers', user='postgres', password=None, host='localhost', port='5433')
 cursor = conn.cursor()
 
-# the target population minimum, not a "hard" threshold
-target = 100000
-
 # every county in NJ by name
 NJ_COUNTIES = ['ATLANTIC', 'BERGEN', 'BURLINGTON', 'CAMDEN', 'CAPEMAY', 'CUMBERLAND', 'ESSEX', 'GLOUCESTER', 'HUDSON',
                'HUNTERDON', 'MERCER', 'MIDDLESEX', 'MONMOUTH', 'MORRIS', 'OCEAN', 'PASSAIC', 'SALEM', 'SOMERSET',
@@ -86,7 +83,7 @@ class Border(Geometry):
         return '%s and %s, %s miles'%(self.munis[0].name, self.munis[1].name, (self.length / MILES_2_FT))
 
 class County(Area):
-    def __init__(self, name):
+    def __init__(self, name, target):
 
         cursor.execute("SELECT sum(pop), sum(area) FROM munis WHERE county = '%s'"%name)
         population = 0
@@ -365,17 +362,44 @@ class Merger(object):
 
 class Driver(object):
     def __init__(self):
-        self.county = None # assigned based on user input
 
+        self.clearScreen()
         print "Welcome to the New Jersey Municipal Merger Project!"
+        print
 
-        self.mainMenu()
-        self.mergerMenu()
+        done = False
 
+        while not done:
+            self.mainMenu()
+            self.mergerMenu()
 
+            # methods have power to exit the system, not
+            # actually an infinite loop
 
+    def clearScreen(self):
+        print
+        print
+        print
+        print
+        print
+        print
+        print
+        print
+        print
+        print
+        print
+        print
+        print
+        print
+        print
+        print
+        print
+        print
+        print
+        print
 
     def mainMenu(self):
+        print
         print "Select an option by entering the corresponding number:"
         print "1. Execute a merger"
         print "2. Exit program"
@@ -391,14 +415,19 @@ class Driver(object):
                 print "Invalid Entry!"
 
         if choiceInput == 2:
+            print 'Goodbye.'
             sys.exit()
 
         # if system doesn't exit, the next menu is initiated (see constructor)
 
     def mergerMenu(self):
+        print
+        print
+        print
         print "Please enter the corresponding number for the county you'd like to merge:"
         print "0. All of them"
 
+        countyName = ''
         count = 1
         for county in NJ_COUNTIES:
             print "%d. %s"%(count, county)
@@ -409,95 +438,110 @@ class Driver(object):
         while not valid:
             choiceInput = input("Choice: ")
             if choiceInput >= 0 and choiceInput <= 21:
+                countyName = NJ_COUNTIES[choiceInput - 1]
                 valid = True
             else:
                 print "Invalid input!"
 
         if choiceInput > 0:
-            self.county = County(NJ_COUNTIES[choiceInput - 1])
-            print self.county.name + " chosen."
+            print countyName + " chosen."
+            valid = False
+            while not valid:
+                choiceInput = input("Enter your post-merger population target: ")
+                if choiceInput > 0:
+                    # if merger already was executed in the past, delete its table from the db to
+                    # avoid duplication error
+                    cursor.execute('DROP TABLE IF EXISTS %s'%(countyName + 'merged' + str(choiceInput)))
+                    target = choiceInput
+                    valid = True
+                else:
+                    print "Invalid! Must be over 0!"
+
+            self.main([countyName], choiceInput)
         else:
             print "You have chosen to simulate a statewide merger."
+            valid = False
+            while not valid:
+                choiceInput = input("Enter your post-merger population target: ")
+                if choiceInput > 0:
+                    # if merger already was executed in the past, delete its table from the db to
+                    # avoid duplication error
+                    cursor.execute('DROP TABLE IF EXISTS %s'%('njmerged' + str(choiceInput)))
+                    target = choiceInput
+                    valid = True
+                else:
+                    print "Invalid! Must be over 0!"
+            self.main(NJ_COUNTIES, choiceInput)
 
-        valid = False
-        maxThresh = 0
-        if choiceInput == 0:
-            maxThresh = STATEWIDE_MIN
+    def main(self, countyList, target):
+        muniCount = 0
+        countyCount = 1
+        outAreaName = ''
+
+        if len(countyList) == 1:
+            outAreaName = countyList[0]
         else:
-            maxThresh = countyMaxDict[self.county.name]
-        userThresh = 0
+            outAreaName = 'nj'
 
+        newTableFields = 'county varchar, mun varchar, muncode varchar(6), pop int, popden double precision, '
+        newTableFields += 'area double precision, merged int'
 
-        while not valid:
-            userThresh = input("Enter desired threshold (must be under %d): "%maxThresh)
-            if userThresh < maxThresh:
-                valid = True
-            else:
-                print "Invalid input!"
+        cursor.execute('CREATE TABLE joinKey (old char(4), new varchar(6));')
+        cursor.execute('CREATE TABLE newmunis (%s)'%newTableFields)
 
-def main():
-    muniCount = 0
-    countyCount = 1
-
-    newTableFields = 'county varchar, mun varchar, muncode varchar(6), pop int, popden double precision, '
-    newTableFields += 'area double precision, merged int'
-
-    cursor.execute('CREATE TABLE joinKey (old char(4), new varchar(6));')
-    cursor.execute('CREATE TABLE newmunis (%s)'%newTableFields)
-
-    for county in NJ_COUNTIES:
-        c = County(county)
-        codePrefix = c.name[:3]
-        mergeID = 1
-        munis = list(c.munis)
-        while not Merger.meetsThreshold(c):
-            muni = munis.pop(0)
-            if muni in c.munis:
-                Merger.merge(muni, mergeID)
-                mergeID += 1
+        for county in countyList:
+            c = County(county, target)
+            codePrefix = c.name[:3]
+            mergeID = 1
             munis = list(c.munis)
-        Merger.fixCodes(c)
-        for m in c.munis:
-            muniCount+=1
-        countyCount+=1
+            while not Merger.meetsThreshold(c):
+                muni = munis.pop(0)
+                if muni in c.munis:
+                    Merger.merge(muni, mergeID)
+                    mergeID += 1
+                munis = list(c.munis)
+            Merger.fixCodes(c)
+            for m in c.munis:
+                muniCount+=1
+            countyCount+=1
 
-        for m in c.munis:
-            mergeStatus = 0
-            if m.wasMerged:
-                mergeStatus = 1
+            for m in c.munis:
+                mergeStatus = 0
+                if m.wasMerged:
+                    mergeStatus = 1
 
-            for old in m.oldMunCodes:
-                cursor.execute("INSERT INTO joinkey (old, new) VALUES ('%s', '%s');"%(old, m.code))
-            cursor.execute("INSERT INTO newmunis VALUES ('%s', '%s', '%s', %d, %d, %d, %d)"%(m.county.name,
-                                                                                             m.name, m.code,
-                                                                                             m.population,
-                                                                                             m.density, m.area,
-                                                                                             mergeStatus))
-    print
-    print 'Pre-merger muni count: 565'
-    print 'Post-merger muni count: %d'%muniCount
-    print 'Merging geometries...'
-    joinQuery = 'SELECT * FROM munis INNER JOIN joinkey ON joinkey.old=munis.muncode ORDER BY county'
-    cursor.execute('CREATE TABLE munijoin AS (%s)'%joinQuery)
+                for old in m.oldMunCodes:
+                    cursor.execute("INSERT INTO joinkey (old, new) VALUES ('%s', '%s');"%(old, m.code))
+                cursor.execute("INSERT INTO newmunis VALUES ('%s', '%s', '%s', %d, %d, %d, %d)"%(m.county.name,
+                                                                                                 m.name, m.code,
+                                                                                                 m.population,
+                                                                                                 m.density, m.area,
+                                                                                                 mergeStatus))
+        print
+        print 'Pre-merger muni count: 565'
+        print 'Post-merger muni count: %d'%muniCount
+        print 'Merging geometries...'
+        joinQuery = 'SELECT * FROM munis INNER JOIN joinkey ON joinkey.old=munis.muncode ORDER BY county'
+        cursor.execute('CREATE TABLE munijoin AS (%s)'%joinQuery)
 
-    stUnionQuery = 'SELECT new, ST_Union(geom) FROM munijoin GROUP BY new'
-    cursor.execute('CREATE TABLE tmp AS (%s)'%stUnionQuery)
+        stUnionQuery = 'SELECT new, ST_Union(geom) FROM munijoin GROUP BY new'
+        cursor.execute('CREATE TABLE tmp AS (%s)'%stUnionQuery)
 
-    tableName = 'njmerged' + str(target)
-    joinQuery = 'SELECT * FROM newmunis INNER JOIN tmp ON tmp.new=newmunis.muncode ORDER BY county'
-    cursor.execute('CREATE TABLE %s AS (%s)'%(tableName, joinQuery))
+        tableName = '%smerged'%(outAreaName) + str(target)
+        joinQuery = 'SELECT * FROM newmunis INNER JOIN tmp ON tmp.new=newmunis.muncode ORDER BY county'
+        cursor.execute('CREATE TABLE %s AS (%s)'%(tableName, joinQuery))
 
-    cursor.execute('ALTER TABLE %s DROP COLUMN new'%tableName)
+        cursor.execute('ALTER TABLE %s DROP COLUMN new'%tableName)
 
-    cursor.execute('DROP TABLE newmunis')
-    cursor.execute('DROP TABLE tmp')
-    cursor.execute('DROP TABLE munijoin')
-    cursor.execute('DROP TABLE joinkey')
-    conn.commit()
-    print 'Finished.'
+        cursor.execute('DROP TABLE newmunis')
+        cursor.execute('DROP TABLE tmp')
+        cursor.execute('DROP TABLE munijoin')
+        cursor.execute('DROP TABLE joinkey')
+        conn.commit()
+        print 'Finished. Data now in PostgreSQL database.'
 
 if __name__ == '__main__':
-    main()
+    d = Driver()
 
 
 
