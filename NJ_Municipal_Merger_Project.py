@@ -226,6 +226,13 @@ class Merger(object):
 
     @staticmethod
     def merge(muni, mergeID):
+        foundPartner = None
+
+        # merge donut holes regardless of population
+        if muni.borderCount < 2:
+            foundPartner = muni.getLongestBorder()
+
+
         if muni.isCand: # if this muni is a candidate...
 
             codePrefix = muni.county.name[:3]
@@ -236,7 +243,7 @@ class Merger(object):
                                                         longestBorderPartner)
 
             muniBordersByLength = heapq.nlargest(len(muni.muniBorders), muni.muniBorders)
-            foundPartner = None
+            # foundPartner = None
 
             trigger = (len(muniBordersByLength) > 1)
 
