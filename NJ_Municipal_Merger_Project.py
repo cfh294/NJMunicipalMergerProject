@@ -128,10 +128,10 @@ class County(Area):
                     if (nbrCode + ':' + muni.code) not in dups: # check for inverse duplicates
                         self.borders.add(newBorder)
                         muni.muniBorders.add(newBorder)
-                        muni.borderCount += 1
                     else:
                         muni.muniBorders.add(self.getBorderByMuniList([muni, otherMuni]))
-                        muni.borderCount += 1
+
+                    muni.borderCount += 1
 
     # adds a new muni to the list, sorts the list
     def addMuni(self, muni):
@@ -228,12 +228,7 @@ class Merger(object):
     def merge(muni, mergeID):
         foundPartner = None
 
-        # merge donut holes regardless of population
-        if muni.borderCount < 2:
-            foundPartner = muni.getLongestBorder()
-
-
-        if muni.isCand: # if this muni is a candidate...
+        if muni.isCand or muni.borderCount == 1: # if this muni is a candidate...
 
             codePrefix = muni.county.name[:3]
             longestBorder = muni.getLongestBorder()
