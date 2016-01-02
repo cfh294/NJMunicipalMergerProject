@@ -228,7 +228,7 @@ class Merger(object):
     def merge(muni, mergeID):
         foundPartner = None
 
-        if muni.isCand or muni.borderCount == 1: # if this muni is a candidate...
+        if muni.isCand or muni.borderCount == 1: # if this muni is a candidate or a donut hole...
 
             codePrefix = muni.county.name[:3]
             longestBorder = muni.getLongestBorder()
@@ -379,26 +379,10 @@ class Driver(object):
             # actually an infinite loop
 
     def clearScreen(self):
-        print
-        print
-        print
-        print
-        print
-        print
-        print
-        print
-        print
-        print
-        print
-        print
-        print
-        print
-        print
-        print
-        print
-        print
-        print
-        print
+        i = 0
+        while i < 20:
+            print
+            i += 1
 
     def mainMenu(self):
         print
