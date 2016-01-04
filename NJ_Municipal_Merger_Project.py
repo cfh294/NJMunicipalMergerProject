@@ -518,6 +518,30 @@ class Driver(object):
         cursor.execute('CREATE TABLE %s AS (%s)'%(tableName, joinQuery))
 
         cursor.execute('ALTER TABLE %s DROP COLUMN new'%tableName)
+        cursor.execute('ALTER TABLE %s RENAME COLUMN st_union TO geom'%tableName)
+
+
+        # The following query cleans up potential slivers that were appearing as a result of
+        # the running of ST_Union. Compliments to the article found at this url:
+        # http://geospatial.commons.gc.cuny.edu/2013/11/04/filling-in-holes-with-postgis/
+        # This solution was integral to solving a major topology bug in this program.
+
+        cleanupQ =      """UPDATE %s t
+                        SET geom = a.geom
+                        FROM (
+                            SELECT muncode, ST_Collect(ST_MakePolygon(geom)) AS geom
+                            FROM (
+                                SELECT muncode, ST_NRings(geom) AS nrings,
+                                    ST_ExteriorRing((ST_Dump(geom)).geom) AS geom
+                                FROM %s
+                                WHERE ST_NRings(geom) > 1
+                                ) s
+                            GROUP BY muncode, nrings
+                            HAVING nrings > COUNT(muncode)
+                            ) a
+                        WHERE t.muncode = a.muncode;"""%(tableName, tableName)
+
+        cursor.execute(cleanupQ)
 
         cursor.execute('DROP TABLE newmunis')
         cursor.execute('DROP TABLE tmp')
