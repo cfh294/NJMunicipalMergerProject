@@ -28,7 +28,7 @@
         <entry file="file://$PROJECT_DIR$/NJ_Municipal_Merger_Project.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.09463722">
-              <caret line="4" column="62" selection-start-line="4" selection-start-column="62" selection-end-line="4" selection-end-column="62" />
+              <caret line="4" column="60" selection-start-line="4" selection-start-column="60" selection-end-line="4" selection-end-column="60" />
               <folding />
             </state>
           </provider>
@@ -50,8 +50,8 @@
     <order />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="26" />
-    <option name="y" value="24" />
+    <option name="x" value="36" />
+    <option name="y" value="207" />
     <option name="width" value="1254" />
     <option name="height" value="731" />
   </component>
@@ -266,7 +266,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="26" y="24" width="1254" height="731" extended-state="0" />
+    <frame x="36" y="207" width="1254" height="731" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24880382" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -350,7 +350,7 @@
     <entry file="file://$PROJECT_DIR$/NJ_Municipal_Merger_Project.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.09463722">
-          <caret line="4" column="62" selection-start-line="4" selection-start-column="62" selection-end-line="4" selection-end-column="62" />
+          <caret line="4" column="60" selection-start-line="4" selection-start-column="60" selection-end-line="4" selection-end-column="60" />
           <folding />
         </state>
       </provider>
