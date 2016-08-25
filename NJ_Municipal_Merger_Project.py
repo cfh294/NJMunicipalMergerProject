@@ -2,7 +2,7 @@ __author__ = 'CFH'
 import psycopg2, sets, heapq, sys
 
 # connection to the database
-conn = psycopg2.connect(database='njmergers', user='postgres', password=None, host='localhost', port='5433')
+conn = psycopg2.connect(database='njmergers', user='hornibrook', host='localhost', port='5433')
 cursor = conn.cursor()
 
 # every county in NJ by name
@@ -542,6 +542,7 @@ class Driver(object):
                         WHERE t.muncode = a.muncode;"""%(tableName, tableName)
 
         cursor.execute(cleanupQ)
+
 
         cursor.execute('DROP TABLE newmunis')
         cursor.execute('DROP TABLE tmp')
