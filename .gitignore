@@ -1,0 +1,6 @@
+# bad extensions
+.DS_Store
+
+# bad paths
+.git/
+.idea/
