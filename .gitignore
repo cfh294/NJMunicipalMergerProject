@@ -1,5 +1,6 @@
 # bad extensions
 .DS_Store
+.gitignore
 
 # bad paths
 .git/
