@@ -1,8 +1,8 @@
 __author__ = 'CFH'
-import psycopg2, sets, heapq, sys
+import psycopg2, sets, heapq, sys, os
 
 # connection to the database
-conn = psycopg2.connect(database='njmergers', user='hornibrook', host='localhost', port='5433')
+conn = psycopg2.connect(database='njmergers', user='hornibrook', host='localhost', port='5433', password=os.environ['HORNIBROOK_PASS'])
 cursor = conn.cursor()
 
 # every county in NJ by name
